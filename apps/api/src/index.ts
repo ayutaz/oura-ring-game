@@ -2,6 +2,8 @@ import { Hono } from 'hono'
 import { serve } from '@hono/node-server'
 import { cors } from 'hono/cors'
 import { logger } from 'hono/logger'
+import { testConnection } from './db/client.js'
+import { runMigrations } from './db/migrations.js'
 
 const app = new Hono()
 
@@ -13,8 +15,13 @@ app.use('*', cors({
 }))
 
 // ヘルスチェック
-app.get('/health', (c) => {
-  return c.json({ status: 'ok', timestamp: new Date().toISOString() })
+app.get('/health', async (c) => {
+  const dbConnected = await testConnection()
+  return c.json({ 
+    status: dbConnected ? 'ok' : 'degraded',
+    database: dbConnected ? 'connected' : 'disconnected',
+    timestamp: new Date().toISOString() 
+  })
 })
 
 // テスト用エンドポイント
@@ -53,10 +60,33 @@ app.get('/mock/health-data', (c) => {
   })
 })
 
-const port = 8787
-console.log(`🚀 Server is running on port ${port}`)
+// サーバー起動時の初期化
+async function startServer() {
+  try {
+    // データベース接続確認
+    const connected = await testConnection()
+    if (!connected) {
+      console.error('Failed to connect to database. Retrying in 5 seconds...')
+      setTimeout(startServer, 5000)
+      return
+    }
+    
+    // マイグレーション実行
+    await runMigrations()
+    
+    // サーバー起動
+    const port = 8787
+    console.log(`🚀 Server is running on port ${port}`)
+    
+    serve({
+      fetch: app.fetch,
+      port
+    })
+  } catch (error) {
+    console.error('Failed to start server:', error)
+    process.exit(1)
+  }
+}
 
-serve({
-  fetch: app.fetch,
-  port
-})
+// サーバー起動
+startServer()
