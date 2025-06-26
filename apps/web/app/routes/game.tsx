@@ -1,52 +1,77 @@
-import { json, redirect } from "@remix-run/node";
+import { json } from "@remix-run/node";
 import type { LoaderFunctionArgs } from "@remix-run/node";
-import { useLoaderData, useNavigate } from "@remix-run/react";
+import { useNavigate } from "@remix-run/react";
 import { useEffect, useState } from "react";
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  // 初回ロードではクライアントサイドで認証チェック
   return json({});
 }
 
 export default function Game() {
   const navigate = useNavigate();
-  const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [healthData, setHealthData] = useState<any>(null);
+  const [character, setCharacter] = useState({
+    name: "冒険者",
+    level: 1,
+    hp: 100,
+    maxHp: 100,
+    mp: 50,
+    maxMp: 50,
+    attack: 10,
+    defense: 10,
+  });
   
   useEffect(() => {
     // 認証チェック
-    const token = localStorage.getItem('auth_token');
+    const token = localStorage.getItem('oura_token');
     if (!token) {
       navigate('/');
       return;
     }
     
-    // ユーザー情報取得
-    async function fetchUser() {
+    // 健康データを取得
+    async function fetchHealthData() {
       try {
-        const response = await fetch('http://localhost:8787/auth/me', {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-          },
-        });
+        const today = new Date().toISOString().split('T')[0];
         
-        if (!response.ok) {
-          throw new Error('Unauthorized');
+        // 睡眠データ取得
+        const sleepResponse = await fetch(
+          `http://localhost:8787/auth/oura-data/daily_sleep?start_date=${today}&end_date=${today}`,
+          {
+            headers: {
+              'Authorization': `Bearer ${token}`,
+            },
+          }
+        );
+        
+        if (!sleepResponse.ok) {
+          throw new Error('Failed to fetch data');
         }
         
-        const data = await response.json();
-        setUser(data.user);
+        const sleepData = await sleepResponse.json();
+        console.log('Sleep data:', sleepData);
+        
+        // キャラクターステータスを更新
+        if (sleepData.data && sleepData.data.length > 0) {
+          const sleep = sleepData.data[0];
+          setCharacter(prev => ({
+            ...prev,
+            mp: Math.min(50 + Math.floor(sleep.score * 0.5), 100),
+            maxMp: 50 + Math.floor(sleep.score * 0.5),
+          }));
+        }
+        
+        setHealthData({ sleep: sleepData.data?.[0] });
+        
       } catch (error) {
-        console.error('Failed to fetch user:', error);
-        localStorage.removeItem('auth_token');
-        localStorage.removeItem('user_id');
-        navigate('/');
+        console.error('Failed to fetch health data:', error);
       } finally {
         setLoading(false);
       }
     }
     
-    fetchUser();
+    fetchHealthData();
   }, [navigate]);
   
   if (loading) {
@@ -56,13 +81,10 @@ export default function Game() {
         textAlign: "center", 
         padding: "2rem" 
       }}>
-        <p>読み込み中...</p>
+        <p>健康データを読み込み中...</p>
+        <div style={{ fontSize: "2rem", marginTop: "1rem" }}>⏳</div>
       </div>
     );
-  }
-  
-  if (!user) {
-    return null;
   }
   
   return (
@@ -83,15 +105,14 @@ export default function Game() {
         alignItems: "center"
       }}>
         <div>
-          <h2 style={{ margin: 0 }}>👤 {user.name}</h2>
+          <h2 style={{ margin: 0 }}>👤 {character.name}</h2>
           <p style={{ margin: 0, color: "#666" }}>
-            Lv.{user.level} ⚡ {user.experience} EXP
+            Lv.{character.level}
           </p>
         </div>
         <button
           onClick={() => {
-            localStorage.removeItem('auth_token');
-            localStorage.removeItem('user_id');
+            localStorage.removeItem('oura_token');
             navigate('/');
           }}
           style={{
@@ -120,8 +141,19 @@ export default function Game() {
           ⚔️ 👤 🛡️
         </div>
         <div style={{ marginBottom: "1rem" }}>
-          <div>HP: ████████░░ 150/180</div>
-          <div>MP: ███████░░░ 80/120</div>
+          <div>
+            HP: {'█'.repeat(Math.floor(character.hp / character.maxHp * 10))}
+            {'░'.repeat(10 - Math.floor(character.hp / character.maxHp * 10))} 
+            {character.hp}/{character.maxHp}
+          </div>
+          <div>
+            MP: {'█'.repeat(Math.floor(character.mp / character.maxMp * 10))}
+            {'░'.repeat(10 - Math.floor(character.mp / character.maxMp * 10))} 
+            {character.mp}/{character.maxMp}
+          </div>
+        </div>
+        <div style={{ fontSize: "0.9rem", color: "#666" }}>
+          攻撃力: {character.attack} | 防御力: {character.defense}
         </div>
       </div>
       
@@ -134,19 +166,15 @@ export default function Game() {
         marginBottom: "1rem"
       }}>
         <h3>📅 今日の冒険</h3>
-        <p>健康データを同期して冒険を開始しましょう！</p>
-        <button
-          style={{
-            padding: "0.5rem 1rem",
-            background: "#10b981",
-            color: "white",
-            border: "none",
-            borderRadius: "4px",
-            cursor: "pointer",
-          }}
-        >
-          🔄 データ同期
-        </button>
+        {healthData?.sleep ? (
+          <div>
+            <p>昨夜の睡眠スコア: {healthData.sleep.score}点</p>
+            <p>「{healthData.sleep.score >= 80 ? '良質な睡眠でMP全回復！' : '睡眠不足で冒険は控えめに...'
+            }」</p>
+          </div>
+        ) : (
+          <p>健康データがまだありません。Oura Ringを装着して睡眠を記録してください。</p>
+        )}
       </div>
       
       {/* 健康データ表示 */}
@@ -162,7 +190,9 @@ export default function Game() {
           textAlign: "center"
         }}>
           <div>💤 睡眠</div>
-          <div style={{ fontSize: "1.5rem", fontWeight: "bold" }}>--</div>
+          <div style={{ fontSize: "1.5rem", fontWeight: "bold" }}>
+            {healthData?.sleep?.score || '--'}
+          </div>
         </div>
         <div style={{ 
           background: "#fef3c7", 

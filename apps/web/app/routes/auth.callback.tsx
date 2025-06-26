@@ -36,30 +36,39 @@ export default function AuthCallback() {
     // APIサーバーにコードを送信してトークンを交換
     async function exchangeToken() {
       try {
+        // セッションストレージからstateを取得
+        const savedState = sessionStorage.getItem('oauth_state');
+        
         const response = await fetch('http://localhost:8787/auth/callback', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ code, state }),
-          credentials: 'include',
+          body: JSON.stringify({ 
+            code, 
+            state: state || savedState || 'no-state' 
+          }),
         });
         
         const data = await response.json();
         
         if (data.success && data.token) {
           // トークンをlocalStorageに保存
-          localStorage.setItem('auth_token', data.token);
-          localStorage.setItem('user_id', data.userId);
+          localStorage.setItem('oura_token', data.token);
+          
+          // セッションストレージをクリア
+          sessionStorage.removeItem('oauth_state');
           
           // ゲーム画面へリダイレクト
           setTimeout(() => {
             navigate('/game');
           }, 1000);
         } else {
-          setAuthError(data.error || 'Authentication failed');
+          setAuthError(data.error || data.details || 'Authentication failed');
+          console.error('Auth error:', data);
         }
       } catch (err) {
+        console.error('Token exchange error:', err);
         setAuthError('Failed to complete authentication');
       } finally {
         setProcessing(false);

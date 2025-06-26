@@ -7,8 +7,11 @@ export async function action({ request }: ActionFunctionArgs) {
   const data = await response.json();
   
   if (data.authUrl) {
-    // Oura認証ページへリダイレクト
-    return redirect(data.authUrl);
+    // stateをセッションストレージ用に返す
+    return json({ 
+      authUrl: data.authUrl,
+      state: data.state 
+    });
   }
   
   return json({ error: 'Failed to get auth URL' }, { status: 500 });

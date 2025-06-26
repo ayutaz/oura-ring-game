@@ -30,8 +30,23 @@ export default function Index() {
           </div>
         </div>
 
-        <form action="/auth/login" method="post">
-          <button type="submit" style={{
+        <button 
+          onClick={async () => {
+            try {
+              const response = await fetch('/auth/login', { method: 'POST' });
+              const data = await response.json();
+              
+              if (data.authUrl) {
+                // stateを保存
+                sessionStorage.setItem('oauth_state', data.state);
+                // Oura認証ページへリダイレクト
+                window.location.href = data.authUrl;
+              }
+            } catch (error) {
+              console.error('Failed to start OAuth flow:', error);
+            }
+          }}
+          style={{
             background: "#6366f1",
             color: "white",
             padding: "1rem 2rem",
@@ -41,9 +56,8 @@ export default function Index() {
             cursor: "pointer",
             marginBottom: "2rem"
           }}>
-            🔗 Oura Ringと連携して始める
-          </button>
-        </form>
+          🔗 Oura Ringと連携して始める
+        </button>
 
         <div style={{ textAlign: "left", maxWidth: "400px", margin: "0 auto" }}>
           <h3>✨ 特徴</h3>

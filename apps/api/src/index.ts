@@ -4,7 +4,7 @@ import { cors } from 'hono/cors'
 import { logger } from 'hono/logger'
 import { testConnection } from './db/client.js'
 import { runMigrations } from './db/migrations.js'
-import authRoutes from './routes/auth.js'
+import authRoutes from './routes/auth-simple.js'
 
 const app = new Hono()
 
