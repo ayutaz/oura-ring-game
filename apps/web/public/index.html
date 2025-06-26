@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🏃‍♂️ Oura Quest ⚔️</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        h1 {
+            font-size: 2.5rem;
+            text-align: center;
+            margin-bottom: 0.5rem;
+        }
+        .subtitle {
+            text-align: center;
+            color: #666;
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+        }
+        .feature-box {
+            background: #f0f0f0;
+            padding: 2rem;
+            border-radius: 8px;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .features {
+            text-align: left;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+        .features li {
+            margin-bottom: 0.5rem;
+        }
+        .notice {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 2rem;
+        }
+        .links {
+            text-align: center;
+            margin-top: 2rem;
+        }
+        .links a {
+            display: inline-block;
+            padding: 0.75rem 2rem;
+            background: #6366f1;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            margin: 0 0.5rem;
+        }
+        .links a:hover {
+            background: #5558e3;
+        }
+        .tech-stack {
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid #e0e0e0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏃‍♂️ Oura Quest ⚔️</h1>
+        <p class="subtitle">あなたの健康が冒険になる</p>
+        
+        <div class="feature-box">
+            <div style="font-size: 4rem; margin-bottom: 1rem;">⚔️ 🛡️</div>
+            <div style="font-size: 1.2rem;">
+                💤 睡眠 → 冒険 → 成長 💪
+            </div>
+        </div>
+
+        <h2>✨ 特徴</h2>
+        <ul class="features">
+            <li>💤 睡眠スコア → MP回復</li>
+            <li>🚶 歩数 → 攻撃力アップ</li>
+            <li>💓 心拍数 → 防御力強化</li>
+            <li>🎮 デモモード（Oura Ring不要）</li>
+        </ul>
+
+        <div class="notice">
+            <strong>⚠️ デモサイトのお知らせ</strong><br>
+            これはGitHub Pages用のデモページです。<br>
+            実際のゲームプレイには、Dockerを使用したローカル環境または<br>
+            Cloudflare Workersへのデプロイが必要です。
+        </div>
+
+        <div class="links">
+            <a href="https://github.com/ayutaz/oura-ring-game" target="_blank">
+                📦 GitHubリポジトリ
+            </a>
+        </div>
+
+        <div class="tech-stack">
+            <h3>🛠️ 技術スタック</h3>
+            <ul>
+                <li>Frontend: Remix (React)</li>
+                <li>Backend: Hono</li>
+                <li>Database: PostgreSQL / Cloudflare D1</li>
+                <li>Platform: Docker / Cloudflare Workers</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

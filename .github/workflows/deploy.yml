@@ -42,10 +42,16 @@ jobs:
       - name: Setup Pages
         uses: actions/configure-pages@v4
       
+      - name: Prepare static files
+        run: |
+          mkdir -p ./static-site
+          cp apps/web/public/index.html ./static-site/
+          echo "Static files prepared"
+      
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: './apps/web/build'
+          path: './static-site'
   
   deploy:
     environment:
