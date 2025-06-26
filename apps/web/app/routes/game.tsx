@@ -11,6 +11,7 @@ export default function Game() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [healthData, setHealthData] = useState<any>(null);
+  const [isDemoMode, setIsDemoMode] = useState(false);
   const [character, setCharacter] = useState({
     name: "冒険者",
     level: 1,
@@ -31,13 +32,13 @@ export default function Game() {
     }
     
     // デモモードチェック
-    const isDemoMode = localStorage.getItem('demo_mode') === 'true';
-    const isManualMode = localStorage.getItem('manual_mode') === 'true';
+    const demoMode = localStorage.getItem('demo_mode') === 'true';
+    setIsDemoMode(demoMode);
     
     // 健康データを取得
     async function fetchHealthData() {
       try {
-        if (isDemoMode) {
+        if (demoMode) {
           // デモデータ
           const demoData = {
             sleep: { score: 85, contributors: { rem_sleep: 80 } },
@@ -51,22 +52,6 @@ export default function Game() {
             mp: Math.min(50 + Math.floor(demoData.sleep.score * 0.5), 100),
             maxMp: 50 + Math.floor(demoData.sleep.score * 0.5),
             attack: 10 + Math.floor(demoData.activity.steps / 1000),
-          }));
-        } else if (isManualMode) {
-          // 手動入力データ
-          const manualData = JSON.parse(localStorage.getItem('manual_data') || '{}');
-          const healthData = {
-            sleep: { score: manualData.sleep || 75 },
-            activity: { steps: manualData.steps || 5000, score: 70 },
-            readiness: { score: manualData.readiness || 70 }
-          };
-          
-          setHealthData(healthData);
-          setCharacter(prev => ({
-            ...prev,
-            mp: Math.min(50 + Math.floor(healthData.sleep.score * 0.5), 100),
-            maxMp: 50 + Math.floor(healthData.sleep.score * 0.5),
-            attack: 10 + Math.floor(healthData.activity.steps / 1000),
           }));
         } else {
           // 実際のOuraデータ
@@ -150,8 +135,6 @@ export default function Game() {
           onClick={() => {
             localStorage.removeItem('oura_token');
             localStorage.removeItem('demo_mode');
-            localStorage.removeItem('manual_mode');
-            localStorage.removeItem('manual_data');
             navigate('/');
           }}
           style={{
@@ -205,6 +188,17 @@ export default function Game() {
         marginBottom: "1rem"
       }}>
         <h3>📅 今日の冒険</h3>
+        {isDemoMode && (
+          <div style={{ 
+            background: "#fef3c7", 
+            padding: "0.5rem", 
+            borderRadius: "4px", 
+            marginBottom: "0.5rem",
+            fontSize: "0.9rem"
+          }}>
+            🎮 デモモードでプレイ中
+          </div>
+        )}
         {healthData?.sleep ? (
           <div>
             <p>昨夜の睡眠スコア: {healthData.sleep.score}点</p>

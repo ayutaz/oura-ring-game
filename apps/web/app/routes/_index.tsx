@@ -30,20 +30,23 @@ export default function Index() {
           </div>
         </div>
 
-        <div style={{ display: "flex", gap: "1rem", justifyContent: "center", marginBottom: "2rem" }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: "1rem", alignItems: "center", marginBottom: "2rem" }}>
           <button 
             onClick={() => window.location.href = '/demo'}
             style={{
               background: "#10b981",
               color: "white",
-              padding: "1rem 2rem",
+              padding: "1rem 3rem",
               fontSize: "1.2rem",
               border: "none",
               borderRadius: "8px",
               cursor: "pointer",
+              width: "280px",
             }}>
-            🎮 今すぐプレイ
+            🎮 デモプレイで体験
           </button>
+          
+          <div style={{ color: "#666", fontSize: "0.9rem" }}>または</div>
           
           <button 
             onClick={async () => {
@@ -62,13 +65,14 @@ export default function Index() {
             style={{
               background: "#6366f1",
               color: "white",
-              padding: "1rem 2rem",
+              padding: "1rem 3rem",
               fontSize: "1.2rem",
               border: "none",
               borderRadius: "8px",
               cursor: "pointer",
+              width: "280px",
             }}>
-            🔗 Oura Ring連携
+            🔗 Oura Ringと連携
           </button>
         </div>
 
