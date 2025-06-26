@@ -1,0 +1,20 @@
+name = "oura-game-api"
+main = "apps/api/src/index.cloudflare.ts"
+compatibility_date = "2024-01-01"
+
+[env.production]
+vars = { ENVIRONMENT = "production" }
+
+[[env.production.d1_databases]]
+binding = "DB"
+database_name = "oura-game-db"
+database_id = "YOUR_DATABASE_ID"
+
+[[env.production.kv_namespaces]]
+binding = "CACHE"
+id = "YOUR_KV_NAMESPACE_ID"
+
+[env.production.secrets]
+OURA_CLIENT_ID = "YOUR_OURA_CLIENT_ID"
+OURA_CLIENT_SECRET = "YOUR_OURA_CLIENT_SECRET"
+JWT_SECRET = "YOUR_JWT_SECRET"
