@@ -27,12 +27,21 @@ jobs:
         ls -la
         echo "Package.json content:"
         cat package.json
+        echo "Test directory:"
+        ls -la tests/
+        echo "Vitest config:"
+        cat vitest.config.ts || echo "No vitest.config.ts found"
     
     - name: Install dependencies
-      run: npm ci
+      run: |
+        NODE_ENV=development npm ci
+        echo "Installed packages:"
+        npm list --depth=0
     
     - name: Run tests
-      run: npm run test -- run
+      run: |
+        echo "Running tests..."
+        NODE_ENV=test npm run test -- run || (echo "Test failed with exit code $?" && exit 1)
     
     - name: Generate coverage report
       run: npm run test:coverage
