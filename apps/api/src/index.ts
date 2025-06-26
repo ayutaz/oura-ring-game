@@ -4,6 +4,7 @@ import { cors } from 'hono/cors'
 import { logger } from 'hono/logger'
 import { testConnection } from './db/client.js'
 import { runMigrations } from './db/migrations.js'
+import authRoutes from './routes/auth.js'
 
 const app = new Hono()
 
@@ -38,6 +39,9 @@ app.get('/', (c) => {
     }
   })
 })
+
+// ルート登録
+app.route('/auth', authRoutes)
 
 // モックデータエンドポイント（開発用）
 app.get('/mock/health-data', (c) => {

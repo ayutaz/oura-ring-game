@@ -30,18 +30,20 @@ export default function Index() {
           </div>
         </div>
 
-        <button style={{
-          background: "#6366f1",
-          color: "white",
-          padding: "1rem 2rem",
-          fontSize: "1.2rem",
-          border: "none",
-          borderRadius: "8px",
-          cursor: "pointer",
-          marginBottom: "2rem"
-        }}>
-          🔗 Oura Ringと連携して始める
-        </button>
+        <form action="/auth/login" method="post">
+          <button type="submit" style={{
+            background: "#6366f1",
+            color: "white",
+            padding: "1rem 2rem",
+            fontSize: "1.2rem",
+            border: "none",
+            borderRadius: "8px",
+            cursor: "pointer",
+            marginBottom: "2rem"
+          }}>
+            🔗 Oura Ringと連携して始める
+          </button>
+        </form>
 
         <div style={{ textAlign: "left", maxWidth: "400px", margin: "0 auto" }}>
           <h3>✨ 特徴</h3>
