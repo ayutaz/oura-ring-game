@@ -30,39 +30,75 @@ export default function Game() {
       return;
     }
     
+    // デモモードチェック
+    const isDemoMode = localStorage.getItem('demo_mode') === 'true';
+    const isManualMode = localStorage.getItem('manual_mode') === 'true';
+    
     // 健康データを取得
     async function fetchHealthData() {
       try {
-        const today = new Date().toISOString().split('T')[0];
-        
-        // 睡眠データ取得
-        const sleepResponse = await fetch(
-          `http://localhost:8787/auth/oura-data/daily_sleep?start_date=${today}&end_date=${today}`,
-          {
-            headers: {
-              'Authorization': `Bearer ${token}`,
-            },
-          }
-        );
-        
-        if (!sleepResponse.ok) {
-          throw new Error('Failed to fetch data');
-        }
-        
-        const sleepData = await sleepResponse.json();
-        console.log('Sleep data:', sleepData);
-        
-        // キャラクターステータスを更新
-        if (sleepData.data && sleepData.data.length > 0) {
-          const sleep = sleepData.data[0];
+        if (isDemoMode) {
+          // デモデータ
+          const demoData = {
+            sleep: { score: 85, contributors: { rem_sleep: 80 } },
+            activity: { steps: 12000, score: 78 },
+            readiness: { score: 82 }
+          };
+          
+          setHealthData(demoData);
           setCharacter(prev => ({
             ...prev,
-            mp: Math.min(50 + Math.floor(sleep.score * 0.5), 100),
-            maxMp: 50 + Math.floor(sleep.score * 0.5),
+            mp: Math.min(50 + Math.floor(demoData.sleep.score * 0.5), 100),
+            maxMp: 50 + Math.floor(demoData.sleep.score * 0.5),
+            attack: 10 + Math.floor(demoData.activity.steps / 1000),
           }));
+        } else if (isManualMode) {
+          // 手動入力データ
+          const manualData = JSON.parse(localStorage.getItem('manual_data') || '{}');
+          const healthData = {
+            sleep: { score: manualData.sleep || 75 },
+            activity: { steps: manualData.steps || 5000, score: 70 },
+            readiness: { score: manualData.readiness || 70 }
+          };
+          
+          setHealthData(healthData);
+          setCharacter(prev => ({
+            ...prev,
+            mp: Math.min(50 + Math.floor(healthData.sleep.score * 0.5), 100),
+            maxMp: 50 + Math.floor(healthData.sleep.score * 0.5),
+            attack: 10 + Math.floor(healthData.activity.steps / 1000),
+          }));
+        } else {
+          // 実際のOuraデータ
+          const today = new Date().toISOString().split('T')[0];
+          
+          const sleepResponse = await fetch(
+            `http://localhost:8787/auth/oura-data/daily_sleep?start_date=${today}&end_date=${today}`,
+            {
+              headers: {
+                'Authorization': `Bearer ${token}`,
+              },
+            }
+          );
+          
+          if (!sleepResponse.ok) {
+            throw new Error('Failed to fetch data');
+          }
+          
+          const sleepData = await sleepResponse.json();
+          console.log('Sleep data:', sleepData);
+          
+          if (sleepData.data && sleepData.data.length > 0) {
+            const sleep = sleepData.data[0];
+            setCharacter(prev => ({
+              ...prev,
+              mp: Math.min(50 + Math.floor(sleep.score * 0.5), 100),
+              maxMp: 50 + Math.floor(sleep.score * 0.5),
+            }));
+          }
+          
+          setHealthData({ sleep: sleepData.data?.[0] });
         }
-        
-        setHealthData({ sleep: sleepData.data?.[0] });
         
       } catch (error) {
         console.error('Failed to fetch health data:', error);
@@ -113,6 +149,9 @@ export default function Game() {
         <button
           onClick={() => {
             localStorage.removeItem('oura_token');
+            localStorage.removeItem('demo_mode');
+            localStorage.removeItem('manual_mode');
+            localStorage.removeItem('manual_data');
             navigate('/');
           }}
           style={{
@@ -201,7 +240,9 @@ export default function Game() {
           textAlign: "center"
         }}>
           <div>🚶 歩数</div>
-          <div style={{ fontSize: "1.5rem", fontWeight: "bold" }}>--</div>
+          <div style={{ fontSize: "1.5rem", fontWeight: "bold" }}>
+            {healthData?.activity?.steps?.toLocaleString() || '--'}
+          </div>
         </div>
         <div style={{ 
           background: "#d1fae5", 
@@ -210,7 +251,9 @@ export default function Game() {
           textAlign: "center"
         }}>
           <div>✨ 準備度</div>
-          <div style={{ fontSize: "1.5rem", fontWeight: "bold" }}>--</div>
+          <div style={{ fontSize: "1.5rem", fontWeight: "bold" }}>
+            {healthData?.readiness?.score || '--'}
+          </div>
         </div>
       </div>
     </div>

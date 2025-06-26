@@ -30,34 +30,47 @@ export default function Index() {
           </div>
         </div>
 
-        <button 
-          onClick={async () => {
-            try {
-              const response = await fetch('/auth/login', { method: 'POST' });
-              const data = await response.json();
-              
-              if (data.authUrl) {
-                // stateを保存
-                sessionStorage.setItem('oauth_state', data.state);
-                // Oura認証ページへリダイレクト
-                window.location.href = data.authUrl;
+        <div style={{ display: "flex", gap: "1rem", justifyContent: "center", marginBottom: "2rem" }}>
+          <button 
+            onClick={() => window.location.href = '/demo'}
+            style={{
+              background: "#10b981",
+              color: "white",
+              padding: "1rem 2rem",
+              fontSize: "1.2rem",
+              border: "none",
+              borderRadius: "8px",
+              cursor: "pointer",
+            }}>
+            🎮 今すぐプレイ
+          </button>
+          
+          <button 
+            onClick={async () => {
+              try {
+                const response = await fetch('/auth/login', { method: 'POST' });
+                const data = await response.json();
+                
+                if (data.authUrl) {
+                  sessionStorage.setItem('oauth_state', data.state);
+                  window.location.href = data.authUrl;
+                }
+              } catch (error) {
+                console.error('Failed to start OAuth flow:', error);
               }
-            } catch (error) {
-              console.error('Failed to start OAuth flow:', error);
-            }
-          }}
-          style={{
-            background: "#6366f1",
-            color: "white",
-            padding: "1rem 2rem",
-            fontSize: "1.2rem",
-            border: "none",
-            borderRadius: "8px",
-            cursor: "pointer",
-            marginBottom: "2rem"
-          }}>
-          🔗 Oura Ringと連携して始める
-        </button>
+            }}
+            style={{
+              background: "#6366f1",
+              color: "white",
+              padding: "1rem 2rem",
+              fontSize: "1.2rem",
+              border: "none",
+              borderRadius: "8px",
+              cursor: "pointer",
+            }}>
+            🔗 Oura Ring連携
+          </button>
+        </div>
 
         <div style={{ textAlign: "left", maxWidth: "400px", margin: "0 auto" }}>
           <h3>✨ 特徴</h3>
