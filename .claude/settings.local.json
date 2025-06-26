@@ -11,7 +11,13 @@
       "Bash(git commit:*)",
       "Bash(git remote add:*)",
       "Bash(rm:*)",
-      "Bash(ls:*)"
+      "Bash(ls:*)",
+      "Bash(git push:*)",
+      "Bash(gh run list:*)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:ayutaz.github.io)",
+      "Bash(npm run test:*)",
+      "Bash(cat:*)"
     ],
     "deny": []
   }
