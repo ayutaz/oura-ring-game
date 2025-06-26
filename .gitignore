@@ -1,0 +1,69 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Testing
+coverage/
+.nyc_output
+
+# Production
+build/
+dist/
+.cache/
+public/build/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker
+.docker/
+
+# Database
+*.sqlite
+*.sqlite3
+postgres_data/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Build artifacts
+.turbo/
+.next/
+.nuxt/
+.output/
+
+# Cloudflare
+.wrangler/
+.dev.vars
+
+# TypeScript
+*.tsbuildinfo
+
+# Package manager
+.yarn/
+.pnpm-debug.log*

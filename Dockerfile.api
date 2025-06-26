@@ -1,0 +1,18 @@
+FROM node:20-alpine
+
+WORKDIR /app
+
+# パッケージファイルをコピー
+COPY apps/api/package.json ./
+
+# 依存関係をインストール（--legacy-peer-depsフラグを追加）
+RUN npm install --legacy-peer-deps
+
+# アプリケーションファイルをコピー
+COPY apps/api .
+
+# ポート公開
+EXPOSE 8787
+
+# 開発サーバー起動
+CMD ["npm", "run", "dev"]

@@ -1,0 +1,18 @@
+FROM node:20-alpine
+
+WORKDIR /app
+
+# パッケージファイルをコピー
+COPY apps/web/package.json ./
+
+# 依存関係をインストール
+RUN npm install
+
+# アプリケーションファイルをコピー
+COPY apps/web .
+
+# ポート公開
+EXPOSE 3000
+
+# 開発サーバー起動
+CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
