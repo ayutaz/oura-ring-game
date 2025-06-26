@@ -8,7 +8,7 @@
 
 ## Cloudflareへのデプロイ
 
-### 1. Cloudflareアカウントの準備
+### 1. 事前準備
 
 ```bash
 # Wrangler CLIをインストール
@@ -18,64 +18,59 @@ npm install -g wrangler
 wrangler login
 ```
 
-### 2. D1データベースの作成
+### 2. プロジェクトセットアップ
 
 ```bash
-# データベースを作成
+# D1データベースを作成
 wrangler d1 create oura-game-db
 
-# 作成されたdatabase_idをwrangler.tomlに設定
-```
-
-### 3. KVネームスペースの作成
-
-```bash
-# KVネームスペースを作成（キャッシュ用）
+# KVネームスペースを作成
 wrangler kv:namespace create CACHE
 
-# 作成されたidをwrangler.tomlに設定
+# 作成されたIDをwrangler.tomlに設定
 ```
 
-### 4. 環境変数の設定
+### 3. 環境変数の設定
 
 ```bash
-# Oura認証情報を設定
+# シークレットを設定
 wrangler secret put OURA_CLIENT_ID
 wrangler secret put OURA_CLIENT_SECRET
 wrangler secret put JWT_SECRET
 ```
 
-### 5. デプロイ
+### 4. デプロイ実行
 
 ```bash
 # APIをデプロイ
 cd apps/api
+npm run build
 wrangler deploy --env production
 
 # Webアプリをデプロイ（Cloudflare Pages）
-cd apps/web
+cd ../web
 npm run build
 wrangler pages deploy ./build
 ```
 
-## GitHub Pagesへのデモ版デプロイ
+## GitHub Actions CI/CD
 
-1. GitHubリポジトリの設定でPagesを有効化
-2. ソース: GitHub Actions
-3. プッシュ時に自動デプロイ
+mainブランチへのプッシュで自動的に：
+- テストが実行されます
+- GitHub Pagesへデモ版がデプロイされます
 
 ```bash
-# mainブランチにプッシュすると自動デプロイ
 git push origin main
 ```
 
 ## ローカル開発
 
 ```bash
-# Docker環境を起動
+# クイックスタート
 docker-compose up
 
 # アクセス
 # Web: http://localhost:3000
 # API: http://localhost:8787
+# pgAdmin: http://localhost:5050
 ```
