@@ -1,5 +1,6 @@
 import type { Character } from './character'
 import type { OuraHealthData } from '@oura/types'
+import { ItemDatabase } from './items.js'
 
 export interface AdventureEvent {
   type: 'hidden_dungeon' | 'penalty' | 'boss_battle' | 'normal'

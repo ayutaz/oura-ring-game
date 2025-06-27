@@ -6,6 +6,7 @@ import { testConnection } from './db/client.js'
 import { runMigrations } from './db/migrations.js'
 import authRoutes from './routes/auth-simple.js'
 import gameRoutes from './routes/game.js'
+import { runAutoAdventure } from './workers/auto-adventure.js'
 
 const app = new Hono()
 
@@ -64,6 +65,23 @@ app.get('/mock/health-data', (c) => {
       score: 82,
     }
   })
+})
+
+// 自動冒険実行エンドポイント（cron用）
+app.post('/workers/auto-adventure', async (c) => {
+  try {
+    // 簡易的な認証（本番環境では適切な認証を実装）
+    const secret = c.req.header('X-Worker-Secret')
+    if (secret !== process.env.WORKER_SECRET) {
+      return c.json({ error: 'Unauthorized' }, 401)
+    }
+    
+    await runAutoAdventure()
+    return c.json({ message: 'Auto adventure completed' })
+  } catch (error) {
+    console.error('Auto adventure failed:', error)
+    return c.json({ error: 'Internal server error' }, 500)
+  }
 })
 
 // サーバー起動時の初期化
