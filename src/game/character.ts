@@ -69,4 +69,36 @@ export class Character {
       this.experience = 0
     }
   }
+
+  calculateStatsFromHealthData(
+    sleep: any,
+    activity: any,
+    readiness: any
+  ): CharacterStats {
+    const baseStats = Character.BASE_STATS
+
+    // 睡眠スコアからMP計算
+    const mpBonus = sleep?.score ? Math.floor(sleep.score * 1.5) : 0
+    const mp = baseStats.mp + mpBonus
+    const maxMp = mp
+
+    // 活動データから攻撃力計算
+    const stepBonus = activity?.steps ? Math.floor(activity.steps / 500) : 0
+    const calorieBonus = activity?.active_calories ? Math.floor(activity.active_calories / 50) : 0
+    const attack = baseStats.attack + stepBonus + calorieBonus
+
+    // 準備度から防御力計算
+    const defenseBonus = readiness?.score ? Math.floor(readiness.score / 10) : 0
+    const defense = baseStats.defense + defenseBonus
+
+    return {
+      hp: baseStats.hp,
+      maxHp: baseStats.hp,
+      mp,
+      maxMp,
+      attack,
+      defense,
+      criticalRate: readiness?.score ? readiness.score / 100 * 0.3 : 0.1,
+    }
+  }
 }

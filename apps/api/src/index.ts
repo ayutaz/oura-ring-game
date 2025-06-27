@@ -5,6 +5,7 @@ import { logger } from 'hono/logger'
 import { testConnection } from './db/client.js'
 import { runMigrations } from './db/migrations.js'
 import authRoutes from './routes/auth-simple.js'
+import gameRoutes from './routes/game.js'
 
 const app = new Hono()
 
@@ -42,6 +43,7 @@ app.get('/', (c) => {
 
 // ルート登録
 app.route('/auth', authRoutes)
+app.route('/game', gameRoutes)
 
 // モックデータエンドポイント（開発用）
 app.get('/mock/health-data', (c) => {

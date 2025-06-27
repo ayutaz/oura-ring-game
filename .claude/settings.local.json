@@ -17,7 +17,8 @@
       "WebFetch(domain:github.com)",
       "WebFetch(domain:ayutaz.github.io)",
       "Bash(npm run test:*)",
-      "Bash(cat:*)"
+      "Bash(cat:*)",
+      "Bash(docker-compose restart:*)"
     ],
     "deny": []
   }

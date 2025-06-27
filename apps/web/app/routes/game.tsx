@@ -214,7 +214,8 @@ export default function Game() {
       <div style={{ 
         display: "grid",
         gridTemplateColumns: "repeat(3, 1fr)",
-        gap: "1rem"
+        gap: "1rem",
+        marginBottom: "1rem"
       }}>
         <div style={{ 
           background: "#dbeafe", 
@@ -249,6 +250,28 @@ export default function Game() {
             {healthData?.readiness?.score || '--'}
           </div>
         </div>
+      </div>
+      
+      {/* 冒険ボタン */}
+      <div style={{ 
+        textAlign: "center",
+        marginTop: "2rem"
+      }}>
+        <button
+          onClick={() => navigate('/game/adventure')}
+          style={{
+            padding: "1rem 3rem",
+            background: "#10b981",
+            color: "white",
+            border: "none",
+            borderRadius: "8px",
+            fontSize: "1.2rem",
+            cursor: "pointer",
+            boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+          }}
+        >
+          ⚔️ 冒険に出発する
+        </button>
       </div>
     </div>
   );
