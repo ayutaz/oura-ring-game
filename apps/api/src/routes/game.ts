@@ -290,4 +290,50 @@ game.get('/adventure-logs', async (c: Context) => {
   }
 })
 
+// プレイヤー統計を取得
+game.get('/stats', async (c: Context) => {
+  const token = c.req.header('Authorization')?.replace('Bearer ', '')
+  if (!token) {
+    return c.json({ error: 'Unauthorized' }, 401)
+  }
+
+  const user = getUserFromToken(token)
+  if (!user) {
+    return c.json({ error: 'Invalid token' }, 401)
+  }
+
+  const pool = getPool()
+  try {
+    // 冒険統計を取得
+    const adventureStats = await pool.query(
+      `SELECT 
+        COUNT(*) as total_adventures,
+        SUM((rewards->>'gold')::int) as total_gold_earned,
+        SUM((rewards->>'experience')::int) as total_experience_earned
+       FROM adventure_logs 
+       WHERE user_id = $1`,
+      [user.userId]
+    )
+
+    // キャラクター情報を取得
+    const characterResult = await pool.query(
+      'SELECT * FROM characters WHERE user_id = $1',
+      [user.userId]
+    )
+
+    const stats = {
+      totalAdventures: parseInt(adventureStats.rows[0].total_adventures) || 0,
+      totalGoldEarned: parseInt(adventureStats.rows[0].total_gold_earned) || 0,
+      totalExperienceEarned: parseInt(adventureStats.rows[0].total_experience_earned) || 0,
+      currentGold: characterResult.rows[0]?.gold || 0,
+      currentLevel: characterResult.rows[0]?.level || 1,
+    }
+
+    return c.json(stats)
+  } catch (error) {
+    console.error('Failed to get stats:', error)
+    return c.json({ error: 'Internal server error' }, 500)
+  }
+})
+
 export default game

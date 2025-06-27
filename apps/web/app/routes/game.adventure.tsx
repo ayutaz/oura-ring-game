@@ -2,6 +2,7 @@ import { json } from "@remix-run/node";
 import type { LoaderFunctionArgs } from "@remix-run/node";
 import { useNavigate, useLoaderData } from "@remix-run/react";
 import { useEffect, useState } from "react";
+import { ShareButtons } from "../components/ShareButtons";
 
 export async function loader({ request }: LoaderFunctionArgs) {
   return json({});

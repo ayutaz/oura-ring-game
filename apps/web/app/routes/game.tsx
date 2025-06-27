@@ -2,6 +2,7 @@ import { json } from "@remix-run/node";
 import type { LoaderFunctionArgs } from "@remix-run/node";
 import { useNavigate } from "@remix-run/react";
 import { useEffect, useState } from "react";
+import { ShareButtons } from "../components/ShareButtons";
 
 export async function loader({ request }: LoaderFunctionArgs) {
   return json({});
@@ -21,6 +22,10 @@ export default function Game() {
     maxMp: 50,
     attack: 10,
     defense: 10,
+  });
+  const [stats, setStats] = useState({
+    totalAdventures: 0,
+    totalGoldEarned: 0,
   });
   
   useEffect(() => {
@@ -85,6 +90,30 @@ export default function Game() {
           setHealthData({ sleep: sleepData.data?.[0] });
         }
         
+        // 統計データを取得（デモモード以外）
+        if (!demoMode) {
+          try {
+            const statsResponse = await fetch(
+              'http://localhost:8787/game/stats',
+              {
+                headers: {
+                  'Authorization': `Bearer ${token}`,
+                },
+              }
+            );
+            
+            if (statsResponse.ok) {
+              const statsData = await statsResponse.json();
+              setStats({
+                totalAdventures: statsData.totalAdventures,
+                totalGoldEarned: statsData.totalGoldEarned,
+              });
+            }
+          } catch (error) {
+            console.error('Failed to fetch stats:', error);
+          }
+        }
+        
       } catch (error) {
         console.error('Failed to fetch health data:', error);
       } finally {
@@ -131,23 +160,33 @@ export default function Game() {
             Lv.{character.level}
           </p>
         </div>
-        <button
-          onClick={() => {
-            localStorage.removeItem('oura_token');
-            localStorage.removeItem('demo_mode');
-            navigate('/');
-          }}
-          style={{
-            padding: "0.5rem 1rem",
-            background: "#dc2626",
-            color: "white",
-            border: "none",
-            borderRadius: "4px",
-            cursor: "pointer",
-          }}
-        >
-          ログアウト
-        </button>
+        <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
+          <ShareButtons 
+            shareData={{
+              character,
+              healthData,
+              totalAdventures: stats.totalAdventures,
+              goldEarned: stats.totalGoldEarned,
+            }}
+          />
+          <button
+            onClick={() => {
+              localStorage.removeItem('oura_token');
+              localStorage.removeItem('demo_mode');
+              navigate('/');
+            }}
+            style={{
+              padding: "0.5rem 1rem",
+              background: "#dc2626",
+              color: "white",
+              border: "none",
+              borderRadius: "4px",
+              cursor: "pointer",
+            }}
+          >
+            ログアウト
+          </button>
+        </div>
       </div>
       
       {/* キャラクター表示エリア */}
