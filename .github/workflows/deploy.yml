@@ -45,7 +45,7 @@ jobs:
       - name: Prepare static files
         run: |
           mkdir -p ./static-site
-          cp apps/web/public/index.html ./static-site/
+          cp apps/web/public/standalone.html ./static-site/index.html
           echo "Static files prepared"
       
       - name: Upload artifact
