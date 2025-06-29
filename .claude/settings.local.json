@@ -18,7 +18,8 @@
       "WebFetch(domain:ayutaz.github.io)",
       "Bash(npm run test:*)",
       "Bash(cat:*)",
-      "Bash(docker-compose restart:*)"
+      "Bash(docker-compose restart:*)",
+      "Bash(chmod:*)"
     ],
     "deny": []
   }

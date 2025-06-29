@@ -8,11 +8,11 @@ vars = { ENVIRONMENT = "production" }
 [[env.production.d1_databases]]
 binding = "DB"
 database_name = "oura-game-db"
-database_id = "YOUR_DATABASE_ID"
+database_id = ""
 
 [[env.production.kv_namespaces]]
 binding = "CACHE"
-id = "YOUR_KV_NAMESPACE_ID"
+id = ""
 
 [env.production.secrets]
 OURA_CLIENT_ID = "YOUR_OURA_CLIENT_ID"

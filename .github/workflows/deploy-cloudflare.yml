@@ -1,0 +1,62 @@
+name: Deploy to Cloudflare
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+    
+    - name: Install Wrangler
+      run: npm install -g wrangler
+    
+    - name: Install dependencies - API
+      run: |
+        cd apps/api
+        npm ci
+        cd ../..
+    
+    - name: Install dependencies - Web
+      run: |
+        cd apps/web
+        npm ci
+        cd ../..
+    
+    - name: Build API
+      run: |
+        cd apps/api
+        npm run build
+        cd ../..
+    
+    - name: Build Web
+      run: |
+        cd apps/web
+        npm run build
+        cd ../..
+    
+    - name: Deploy API to Workers
+      env:
+        CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      run: |
+        cd apps/api
+        wrangler deploy --env production
+        cd ../..
+    
+    - name: Deploy Web to Pages
+      env:
+        CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      run: |
+        cd apps/web
+        wrangler pages deploy ./build/client --project-name=oura-game-web
+        cd ../..
