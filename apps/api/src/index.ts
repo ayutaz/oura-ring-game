@@ -5,6 +5,7 @@ import { logger } from 'hono/logger'
 import { testConnection } from './db/client.js'
 import { runMigrations } from './db/migrations.js'
 import authRoutes from './routes/auth-simple.js'
+import authUserRoutes from './routes/auth-user.js'
 import gameRoutes from './routes/game.js'
 import { runAutoAdventure } from './workers/auto-adventure.js'
 
@@ -43,7 +44,7 @@ app.get('/', (c) => {
 })
 
 // ルート登録
-app.route('/auth', authRoutes)
+app.route('/auth', authUserRoutes) // ユーザー入力認証を優先
 app.route('/game', gameRoutes)
 
 // モックデータエンドポイント（開発用）

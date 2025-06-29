@@ -173,6 +173,8 @@ export default function Game() {
             onClick={() => {
               localStorage.removeItem('oura_token');
               localStorage.removeItem('demo_mode');
+              localStorage.removeItem('oura_credentials');
+              sessionStorage.clear();
               navigate('/');
             }}
             style={{

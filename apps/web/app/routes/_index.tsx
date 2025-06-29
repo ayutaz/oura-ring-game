@@ -49,19 +49,7 @@ export default function Index() {
           <div style={{ color: "#666", fontSize: "0.9rem" }}>または</div>
           
           <button 
-            onClick={async () => {
-              try {
-                const response = await fetch('/auth/login', { method: 'POST' });
-                const data = await response.json();
-                
-                if (data.authUrl) {
-                  sessionStorage.setItem('oauth_state', data.state);
-                  window.location.href = data.authUrl;
-                }
-              } catch (error) {
-                console.error('Failed to start OAuth flow:', error);
-              }
-            }}
+            onClick={() => window.location.href = '/connect-oura'}
             style={{
               background: "#6366f1",
               color: "white",
@@ -86,8 +74,29 @@ export default function Index() {
         </div>
 
         <p style={{ marginTop: "2rem", color: "#999" }}>
-          📱 必要なもの: Oura Ring
+          📱 必要なもの: Oura Ring Developer アカウント
         </p>
+
+        <div style={{ 
+          marginTop: "2rem", 
+          padding: "1rem", 
+          background: "#f0f8ff",
+          borderRadius: "8px",
+          fontSize: "0.85rem",
+          color: "#666",
+          textAlign: "left",
+          maxWidth: "400px",
+          margin: "2rem auto 0"
+        }}>
+          <p style={{ margin: "0 0 0.5rem 0", fontWeight: "bold" }}>
+            🔒 セキュアな設計
+          </p>
+          <ul style={{ margin: 0, paddingLeft: "1.5rem" }}>
+            <li>認証情報はサーバーに保存されません</li>
+            <li>ブラウザのローカルストレージで管理</li>
+            <li>各ユーザーが自分の認証情報を使用</li>
+          </ul>
+        </div>
       </div>
     </div>
   );
